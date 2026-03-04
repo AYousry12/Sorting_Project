@@ -4,7 +4,8 @@ public class SortingResult {
     public String algorithmName;
     public long runtime;        // in nanoseconds
     public int comparisons;
-    public int interchanges;    // swaps
+    public int interchanges;
+
 
     public SortingResult(String name, long runtime, int comparisons, int interchanges) {
         this.algorithmName = name;
