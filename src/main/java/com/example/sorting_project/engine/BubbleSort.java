@@ -2,7 +2,7 @@ package com.example.sorting_project.engine;
 
 public class BubbleSort {
 
-    public static SortingResult sort(int[] array) {
+    public static SingleRunResult sort(int[] array) {
         int length = array.length;
         int comparisons = 0;
         int interchanges = 0;
@@ -23,6 +23,6 @@ public class BubbleSort {
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
 
-        return new SortingResult("Bubble Sort", duration, comparisons, interchanges);
+        return new SingleRunResult(duration, comparisons, interchanges);
     }
 }

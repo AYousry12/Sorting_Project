@@ -4,7 +4,7 @@ public class MergeSort {
     private static int comparisons = 0;
     private static int interchanges = 0;
 
-    public static SortingResult sort(int[] array) {
+    public static SingleRunResult sort(int[] array) {
         comparisons = 0;
         interchanges = 0;
         long startTime = System.nanoTime();
@@ -14,7 +14,7 @@ public class MergeSort {
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
 
-        return new SortingResult("Merge Sort", duration, comparisons, interchanges);
+        return new SingleRunResult(duration, comparisons, interchanges);
     }
 
     private static void mergeSort(int[] array, int left, int right) {

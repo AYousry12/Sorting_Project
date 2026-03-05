@@ -4,7 +4,7 @@ public class QuickSort {
     private static int comparisons = 0;
     private static int interchanges = 0;
 
-    public static SortingResult sort(int[] array) {
+    public static SingleRunResult sort(int[] array) {
         comparisons = 0;
         interchanges = 0;
         long startTime = System.nanoTime();
@@ -13,7 +13,7 @@ public class QuickSort {
 
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
-        return new SortingResult("Quick Sort", duration, comparisons, interchanges);
+        return new SingleRunResult(duration, comparisons, interchanges);
     }
 
     private static void quickSort(int[] array, int low, int high) {

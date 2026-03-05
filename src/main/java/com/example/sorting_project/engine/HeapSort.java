@@ -4,7 +4,7 @@ public class HeapSort {
     private static int comparisons = 0;
     private static int interchanges = 0;
 
-    public static SortingResult sort(int[] array) {
+    public static SingleRunResult sort(int[] array) {
         comparisons = 0;
         interchanges = 0;
         int n = array.length;
@@ -29,7 +29,7 @@ public class HeapSort {
 
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
-        return new SortingResult("Heap Sort", duration, comparisons, interchanges);
+        return new SingleRunResult(duration, comparisons, interchanges);
     }
 
     private static void heapify(int[] array, int n, int i) {
