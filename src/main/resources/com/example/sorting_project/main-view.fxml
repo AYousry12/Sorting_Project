@@ -5,49 +5,76 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.sorting_project.MainController" prefHeight="600.0" prefWidth="900.0">
+            fx:controller="com.example.sorting_project.MainController" prefHeight="700.0" prefWidth="1000.0">
 
-    <left>
-        <VBox spacing="15.0" style="-fx-background-color: #f4f4f4; -fx-border-color: #cccccc; -fx-border-width: 0 1 0 0;">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-            <Label text="Configuration" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-
-            <Label text="Array Size:"/>
-            <TextField fx:id="txtSize" text="1000"/>
-
-            <Label text="Array Type:"/>
-            <ComboBox fx:id="comboType" prefWidth="150.0"/>
-
-            <Separator/>
-
-            <Button fx:id="btnRun" text="Run Comparison" onAction="#handleRunComparison" maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-            <Button fx:id="btnOpenFile" text="Open TXT File" onAction="#handleOpenFile" maxWidth="Infinity"/>
-
-            <Separator/>
-
-            <Button text="Switch to Visualizer" onAction="#handleSwitchMode" maxWidth="Infinity"/>
-        </VBox>
-    </left>
+    <top>
+        <HBox spacing="0" prefHeight="50.0" style="-fx-background-color: #333; -fx-border-color: #222; -fx-border-width: 0 0 1 0;">
+            <Button fx:id="btnTabComparison" text="Comparison Mode" onAction="#showComparisonMode"
+                    prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 0; -fx-background-color: #444; -fx-text-fill: white;"/>
+            <Button fx:id="btnTabVisualizer" text="Visualization Mode" onAction="#showVisualizerMode"
+                    prefHeight="50.0" prefWidth="200.0" style="-fx-background-radius: 0; -fx-background-color: #333; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
 
     <center>
-        <StackPane>
+        <StackPane fx:id="contentStack">
             <VBox fx:id="viewComparison" spacing="10">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
+                </padding>
+                <Label text="Performance Benchmarks" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <TableView fx:id="tableResults" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colName" text="Algorithm" prefWidth="150"/>
+                        <TableColumn fx:id="colAvg" text="Avg (ms)" prefWidth="100"/>
+                        <TableColumn fx:id="colMin" text="Min (ms)" prefWidth="100"/>
+                        <TableColumn fx:id="colMax" text="Max (ms)" prefWidth="100"/>
+                        <TableColumn fx:id="colComp" text="Comparisons" prefWidth="120"/>
+                        <TableColumn fx:id="colInt" text="Interchanges" prefWidth="120"/>
+                    </columns>
+                </TableView>
             </VBox>
 
-            <VBox fx:id="viewVisualizer" spacing="10" visible="false">
+            <VBox fx:id="viewVisualizer" spacing="15" visible="false" managed="false">
                 <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
                 </padding>
-                <HBox spacing="10" alignment="CENTER">
-                    <Button text="Start Animation" onAction="#handleStartAnimation"/>
-                    <Button text="Reset" onAction="#handleResetVisualizer"/>
-                    <Slider fx:id="sliderSpeed" min="1" max="100" value="50"/>
-                    <Label text="Speed"/>
+                <HBox spacing="20" alignment="CENTER">
+                    <Label fx:id="lblVisComp" text="Comparisons: 0" style="-fx-text-fill: #2196F3; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                    <Label fx:id="lblVisInter" text="Interchanges: 0" style="-fx-text-fill: #F44336; -fx-font-weight: bold; -fx-font-size: 14px;"/>
                 </HBox>
-                <Pane fx:id="paneCanvas" VBox.vgrow="ALWAYS" style="-fx-background-color: #222222; -fx-border-color: #444444;"/>
+                <Pane fx:id="paneCanvas" VBox.vgrow="ALWAYS" style="-fx-background-color: #1e1e1e; -fx-border-color: #333; -fx-border-radius: 5; -fx-background-radius: 5;"/>
             </VBox>
         </StackPane>
     </center>
+
+    <right>
+        <StackPane fx:id="settingsStack" prefWidth="250.0" style="-fx-background-color: #f4f4f4; -fx-border-color: #ccc; -fx-border-width: 0 0 0 1;">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <VBox fx:id="settingsComparison" spacing="15">
+                <Label text="Comparison Controls" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                <Separator/>
+                <Label text="Array Size:"/>
+                <TextField fx:id="txtSize" text="1000"/>
+                <Label text="Initial State:"/>
+                <ComboBox fx:id="comboType" prefWidth="210.0"/>
+                <Button text="Run All Sorts" onAction="#handleRunComparison" maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button text="Load from File" onAction="#handleOpenFile" maxWidth="Infinity"/>
+            </VBox>
+
+            <VBox fx:id="settingsVisualizer" spacing="15" visible="false" managed="false">
+                <Label text="Visualizer Controls" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                <Separator/>
+                <Label text="Algorithm:"/>
+                <ComboBox fx:id="comboVisualAlgo" prefWidth="210.0"/>
+                <Label text="Number of Elements (Max 100):"/>
+                <TextField fx:id="txtVisualCount" text="50" promptText="Enter 1-100"/>
+                <Label text="Animation Speed (1-100):"/>
+                <Slider fx:id="sliderSpeed" min="1" max="100" value="50" showTickLabels="true"/>
+                <Button text="Start Animation" onAction="#handleStartAnimation" maxWidth="Infinity" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button text="Reset Visual" onAction="#handleResetVisualizer" maxWidth="Infinity"/>
+            </VBox>
+        </StackPane>
+    </right>
 </BorderPane>

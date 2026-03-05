@@ -4,30 +4,27 @@ import java.util.Random;
 
 public class ArrayGenerator {
 
-    // the random generator has a max value that the random number won`t exceed
-    public static int[] generateRandom(int size, int maxValue) {
+    public static int[] generateRandom(int size) {
         int[] arr = new int[size];
         Random rand = new Random();
         for (int i = 0; i < size; i++) {
-            arr[i] = rand.nextInt(maxValue + 1);
+            arr[i] = rand.nextInt();
         }
         return arr;
     }
 
-    // The sorted generator has a start value to start counting from
-    public static int[] generateSorted(int size, int startValue) {
+    public static int[] generateSorted(int size) {
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
-            arr[i] = startValue + i;
+            arr[i] = i + 1;
         }
         return arr;
     }
 
-    // the inversely sorted generator has a max value to start decreasing from it
-    public static int[] generateInverselySorted(int size, int startValue) {
+    public static int[] generateInverselySorted(int size) {
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
-            arr[i] = startValue - i;
+            arr[i] = size - i;
         }
         return arr;
     }

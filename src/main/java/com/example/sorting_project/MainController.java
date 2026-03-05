@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 
+
 public class MainController {
 
     @FXML private TableColumn<SortingResult, String> colName;
@@ -30,16 +31,31 @@ public class MainController {
     @FXML private Pane paneCanvas;
     @FXML private VBox viewComparison, viewVisualizer;
     @FXML private Slider sliderSpeed;
+    @FXML private VBox settingsComparison, settingsVisualizer;
+    @FXML private ComboBox<String> comboVisualAlgo;
+    @FXML private Button btnTabComparison;
+    @FXML private Button btnTabVisualizer;
+    @FXML private Label lblVisComp, lblVisInter;
+    @FXML private TextField txtVisualCount;
 
 
     private ObservableList<SortingResult> resultsData = FXCollections.observableArrayList();
     private int[] visualArray;
+    private volatile boolean isSorting = false;
 
     @FXML
     public void initialize() {
-        // the ComboBox
         comboType.setItems(FXCollections.observableArrayList("Random", "Sorted", "Inversely Sorted"));
         comboType.getSelectionModel().selectFirst();
+        comboVisualAlgo.setItems(FXCollections.observableArrayList(
+                "Bubble Sort",
+                "Selection Sort",
+                "Insertion Sort",
+                "Quick Sort",
+                "Merge Sort",
+                "Heap Sort"
+        ));
+        comboVisualAlgo.getSelectionModel().selectFirst();
 
         colName.setCellValueFactory(new PropertyValueFactory<>("algorithmName"));
         colAvg.setCellValueFactory(new PropertyValueFactory<>("avgRuntime"));
@@ -53,16 +69,30 @@ public class MainController {
 
     @FXML
     private void handleRunComparison() {
-        resultsData.clear();
-        int size = Integer.parseInt(txtSize.getText());
-        int[] baseArray = ArrayGenerator.generateRandom(size, size * 10); // Or based on the ComboBox
+        try {
+            int size = Integer.parseInt(txtSize.getText());
+            String type = comboType.getValue();
+            resultsData.clear();
 
-        resultsData.add(benchmark("Bubble Sort", baseArray, BubbleSort::sort));
-        resultsData.add(benchmark("Selection Sort", baseArray, SelectionSort::sort));
-        resultsData.add(benchmark("Insertion Sort", baseArray, InsertionSort::sort));
-        resultsData.add(benchmark("Merge Sort", baseArray, MergeSort::sort));
-        resultsData.add(benchmark("Quick Sort", baseArray, QuickSort::sort));
-        resultsData.add(benchmark("Heap Sort", baseArray, HeapSort::sort));
+            int[] baseData;
+            if ("Sorted".equals(type)) {
+                baseData = ArrayGenerator.generateSorted(size);
+            } else if ("Inversely Sorted".equals(type)) {
+                baseData = ArrayGenerator.generateInverselySorted(size);
+            } else {
+                baseData = ArrayGenerator.generateRandom(size);
+            }
+
+            resultsData.add(benchmark("Bubble Sort", baseData.clone(), BubbleSort::sort));
+            resultsData.add(benchmark("Selection Sort", baseData.clone(), SelectionSort::sort));
+            resultsData.add(benchmark("Insertion Sort", baseData.clone(), InsertionSort::sort));
+            resultsData.add(benchmark("Merge Sort", baseData.clone(), MergeSort::sort));
+            resultsData.add(benchmark("Quick Sort", baseData.clone(), QuickSort::sort));
+            resultsData.add(benchmark("Heap Sort", baseData.clone(), HeapSort::sort));
+
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid size input");
+        }
     }
 
     @FXML
@@ -116,62 +146,113 @@ public class MainController {
         return new SortingResult(name, avgMs, minNs / 1_000_000.0, maxNs / 1_000_000.0, comps, inters);
     }
 
-    @FXML
-    private void handleSwitchMode() {
-        boolean isComparisonVisible = viewComparison.isVisible();
-        viewComparison.setVisible(!isComparisonVisible);
-        viewVisualizer.setVisible(isComparisonVisible);
-    }
+    private int getVisualCount() {
+        try {
+            String text = txtVisualCount.getText().trim();
+            if (text.isEmpty()) return 50; // Default if empty
 
-    private void drawArray(int[] arr, int highlightedIndex1, int highlightedIndex2) {
-        Platform.runLater(() -> {
-            paneCanvas.getChildren().clear();
-            double canvasWidth = paneCanvas.getWidth();
-            double canvasHeight = paneCanvas.getHeight();
-            double barWidth = canvasWidth / arr.length;
+            int count = Integer.parseInt(text);
 
-            for (int i = 0; i < arr.length; i++) {
-                double barHeight = (arr[i] / (double) Arrays.stream(arr).max().getAsInt()) * canvasHeight;
-                Rectangle rect = new Rectangle(i * barWidth, canvasHeight - barHeight, barWidth - 1, barHeight);
+            if (count > 100) return 100;
+            if (count < 2) return 2;
 
-                // Highlight the elements currently being compared/swapped
-                if (i == highlightedIndex1 || i == highlightedIndex2) {
-                    rect.setFill(Color.RED);
-                } else {
-                    rect.setFill(Color.SKYBLUE);
-                }
-                paneCanvas.getChildren().add(rect);
-            }
-        });
+            return count;
+        } catch (NumberFormatException e) {
+            return 50;
+        }
     }
 
     @FXML
     private void handleStartAnimation() {
-        int[] arr = ArrayGenerator.generateRandom(50, 100); // Small size for visibility
+        if (isSorting) return;
+
+        isSorting = true;
+        int count = getVisualCount();
         int speed = (int) sliderSpeed.getValue();
 
-        new Thread(() -> {
-            VisualSorter sorter = new VisualSorter(this::drawBars, 101 - speed);
-            sorter.visualBubbleSort(arr);
-        }).start();
+        int delay = (int) (Math.pow(101 - speed, 1.2));
+
+        int[] arr = ArrayGenerator.generateRandom(count);
+
+        Thread sortingThread = new Thread(() -> {
+            try {
+                VisualSorter sorter = new VisualSorter(this::drawBars, delay);
+                String selectedAlgo = comboVisualAlgo.getValue();
+
+                switch (selectedAlgo) {
+                    case "Bubble Sort" -> sorter.visualBubbleSort(arr);
+                    case "Selection Sort" -> sorter.visualSelectionSort(arr);
+                    case "Insertion Sort" -> sorter.visualInsertionSort(arr);
+                    case "Quick Sort" -> sorter.visualQuickSort(arr, 0, arr.length - 1);
+                    case "Merge Sort" -> sorter.visualMergeSort(arr, 0, arr.length - 1);
+                    case "Heap Sort" -> sorter.visualHeapSort(arr);
+                }
+            } finally {
+                isSorting = false;
+            }
+        });
+
+        sortingThread.setDaemon(true);
+        sortingThread.setName("SortingThread");
+        sortingThread.start();
     }
 
-    private void drawBars(int[] arr, int activeIndex) {
+    private void drawBars(VisualSorter.VisualStats stats) {
+        lblVisComp.setText("Comparisons: " + stats.comparisons());
+        lblVisInter.setText("Interchanges: " + stats.interchanges());
+
         paneCanvas.getChildren().clear();
         double width = paneCanvas.getWidth();
         double height = paneCanvas.getHeight();
-        double barWidth = width / arr.length;
+        double barWidth = width / stats.array().length;
 
-        for (int i = 0; i < arr.length; i++) {
-            double barHeight = (arr[i] / 100.0) * height; // Scale based on max value
-            javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle(
-                    i * barWidth, height - barHeight, barWidth - 1, barHeight
-            );
-            rect.setFill(i == activeIndex ? javafx.scene.paint.Color.RED : javafx.scene.paint.Color.SKYBLUE);
+        for (int i = 0; i < stats.array().length; i++) {
+            double barHeight = (stats.array()[i] / 500.0) * height;
+            Rectangle rect = new Rectangle(i * barWidth, height - barHeight, barWidth - 1, barHeight);
+
+            rect.setFill(i == stats.activeIndex() ? Color.RED : Color.SKYBLUE);
             paneCanvas.getChildren().add(rect);
         }
     }
 
-    public void handleResetVisualizer(ActionEvent actionEvent) {
+    @FXML
+    private void handleResetVisualizer() {
+
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().equals("SortingThread")) {
+                t.interrupt();
+            }
+        }
+
+        isSorting = false;
+        paneCanvas.getChildren().clear();
+        lblVisComp.setText("Comparisons: 0");
+        lblVisInter.setText("Interchanges: 0");
+    }
+
+    @FXML
+    private void showComparisonMode() {
+        toggleViews(true);
+        btnTabComparison.setStyle("-fx-background-color: #444; -fx-text-fill: white; -fx-border-color: #2196F3; -fx-border-width: 0 0 3 0;");
+        btnTabVisualizer.setStyle("-fx-background-color: #333; -fx-text-fill: #aaa; -fx-border-width: 0;");
+    }
+
+    @FXML
+    private void showVisualizerMode() {
+        toggleViews(false);
+        btnTabVisualizer.setStyle("-fx-background-color: #444; -fx-text-fill: white; -fx-border-color: #2196F3; -fx-border-width: 0 0 3 0;");
+        btnTabComparison.setStyle("-fx-background-color: #333; -fx-text-fill: #aaa; -fx-border-width: 0;");
+    }
+
+    private void toggleViews(boolean isComparison) {
+        viewComparison.setVisible(isComparison);
+        viewComparison.setManaged(isComparison);
+        viewVisualizer.setVisible(!isComparison);
+        viewVisualizer.setManaged(!isComparison);
+
+        settingsComparison.setVisible(isComparison);
+        settingsComparison.setManaged(isComparison);
+        settingsVisualizer.setVisible(!isComparison);
+        settingsVisualizer.setManaged(!isComparison);
     }
 }
