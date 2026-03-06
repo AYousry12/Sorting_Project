@@ -59,8 +59,22 @@
                 <TextField fx:id="txtSize" text="1000"/>
                 <Label text="Initial State:"/>
                 <ComboBox fx:id="comboType" prefWidth="210.0"/>
-                <Button text="Run All Sorts" onAction="#handleRunComparison" maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"/>
+
                 <Button text="Load from File" onAction="#handleOpenFile" maxWidth="Infinity"/>
+                <Label fx:id="lblFileStatusComparison" text="No file loaded"
+                       style="-fx-text-fill: gray; -fx-font-style: italic;" wrapText="true"/>
+
+                <Separator/>
+                <Label text="Select Algorithms to Run:"/>
+                <CheckBox fx:id="chkBubble" text="Bubble Sort" selected="true"/>
+                <CheckBox fx:id="chkSelection" text="Selection Sort" selected="true"/>
+                <CheckBox fx:id="chkInsertion" text="Insertion Sort" selected="true"/>
+                <CheckBox fx:id="chkQuick" text="Quick Sort" selected="true"/>
+                <CheckBox fx:id="chkMerge" text="Merge Sort" selected="true"/>
+                <CheckBox fx:id="chkHeap" text="Heap Sort" selected="true"/>
+
+                <Button text="Run Selected Algorithms" onAction="#handleRunComparison"
+                        maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"/>
             </VBox>
 
             <VBox fx:id="settingsVisualizer" spacing="15" visible="false" managed="false">
@@ -68,11 +82,18 @@
                 <Separator/>
                 <Label text="Algorithm:"/>
                 <ComboBox fx:id="comboVisualAlgo" prefWidth="210.0"/>
+                <Label text="Input Source:"/>
+                <ComboBox fx:id="comboVisualSource" prefWidth="210.0"/>
+                <Button fx:id="btnSelectFileVisual" text="Select File" onAction="#handleOpenFile"
+                        maxWidth="Infinity" visible="false" managed="false" />
+                <Label fx:id="lblFileStatus" text="No file loaded"
+                       style="-fx-text-fill: gray; -fx-font-style: italic;" wrapText="true"/>
                 <Label text="Number of Elements (Max 100):"/>
                 <TextField fx:id="txtVisualCount" text="50" promptText="Enter 1-100"/>
                 <Label text="Animation Speed (1-100):"/>
                 <Slider fx:id="sliderSpeed" min="1" max="100" value="50" showTickLabels="true"/>
-                <Button text="Start Animation" onAction="#handleStartAnimation" maxWidth="Infinity" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button text="Start Animation" onAction="#handleStartAnimation" maxWidth="Infinity"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;"/>
                 <Button text="Reset Visual" onAction="#handleResetVisualizer" maxWidth="Infinity"/>
             </VBox>
         </StackPane>

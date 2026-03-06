@@ -23,9 +23,9 @@ public class VisualSorter {
             throw new RuntimeException("Sorting Interrupted");
         }
 
-        VisualStats stats = new VisualStats(array.clone(), currentIndex, comparisons, interchanges);
-        Platform.runLater(() -> updateUI.accept(stats));
+        VisualStats stats = new VisualStats(array.clone(), currentIndex, this.comparisons, this.interchanges);
 
+        updateUI.accept(stats);
         try {
             Thread.sleep(delayMs);
         } catch (InterruptedException e) {
