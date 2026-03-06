@@ -211,7 +211,7 @@ public class MainController {
 
         final int[] finalArr = tempArr;
         isSorting = true;
-        isPaused = false; // Reset pause state for new run
+        isPaused = false;
 
         drawBars(new VisualSorter.VisualStats(finalArr, -1, 0, 0));
 
@@ -220,7 +220,6 @@ public class MainController {
                 int speedValue = (int) sliderSpeed.getValue();
                 int delay = (int) (Math.pow(101 - speedValue, 1.2));
 
-                // Assign to the class-level variable so handlePauseResume can see it
                 this.activeSorter = new VisualSorter(this::drawBars, delay);
 
                 String selectedAlgo = comboVisualAlgo.getValue();
@@ -240,7 +239,6 @@ public class MainController {
                 isSorting = false;
                 activeSorter = null;
 
-                // Reset UI components back to default
                 Platform.runLater(() -> {
                     btnPauseResume.setText("Pause");
                     btnPauseResume.getStyleClass().remove("button-paused");

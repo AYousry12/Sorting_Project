@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 public class VisualSorter {
 
-    private Consumer<VisualStats> updateUI; // Changed from BiConsumer
+    private Consumer<VisualStats> updateUI;
     private int comparisons = 0;
     private int interchanges = 0;
     private int delayMs;
@@ -24,7 +24,7 @@ public class VisualSorter {
         this.paused = paused;
         if (!paused) {
             synchronized (this) {
-                this.notifyAll(); // Wake up the thread when unpaused
+                this.notifyAll();
             }
         }
     }
