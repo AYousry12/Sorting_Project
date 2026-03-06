@@ -38,12 +38,10 @@ public class MergeSort {
 
         for (int i = 0; i < Leftsize; i++){
             L[i] = array[left + i];
-            interchanges++;
         }
 
         for (int i = 0; i < Rightsize; i++) {
             R[i] = array[mid + 1 + i];
-            interchanges++;
         }
 
         int i = 0, j = 0;

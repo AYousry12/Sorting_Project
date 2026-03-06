@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.sorting_project.MainController" prefHeight="700.0" prefWidth="1000.0">
+            fx:controller="com.example.sorting_project.MainController" prefHeight="700.0" prefWidth="1000.0" stylesheets="@style.css">
 
     <top>
         <HBox spacing="0" prefHeight="50.0" style="-fx-background-color: #333; -fx-border-color: #222; -fx-border-width: 0 0 1 0;">
@@ -49,10 +49,10 @@
     </center>
 
     <right>
-        <StackPane fx:id="settingsStack" prefWidth="250.0" style="-fx-background-color: #f4f4f4; -fx-border-color: #ccc; -fx-border-width: 0 0 0 1;">
+        <StackPane fx:id="settingsStack" prefWidth="280.0" styleClass="settings-panel">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
-            <VBox fx:id="settingsComparison" spacing="15">
+            <VBox fx:id="settingsComparison" spacing="15" styleClass="settings-panel">
                 <Label text="Comparison Controls" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
                 <Separator/>
                 <Label text="Array Size:"/>
@@ -74,7 +74,7 @@
                 <CheckBox fx:id="chkHeap" text="Heap Sort" selected="true"/>
 
                 <Button text="Run Selected Algorithms" onAction="#handleRunComparison"
-                        maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                        maxWidth="Infinity" styleClass="button-primary"/>
             </VBox>
 
             <VBox fx:id="settingsVisualizer" spacing="15" visible="false" managed="false">

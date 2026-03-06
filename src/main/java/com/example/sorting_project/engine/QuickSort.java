@@ -33,7 +33,7 @@ public class QuickSort {
 
         for (int j = low; j < high; j++) {
             comparisons++;
-            if (array[j] <= pivot) {
+            if (array[j] < pivot) {
                 i++;
                 // Swap element at the bound and current smaller element
                 int temp = array[i];

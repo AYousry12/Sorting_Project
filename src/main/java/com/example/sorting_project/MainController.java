@@ -51,23 +51,19 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // 1. Define the shared list of states
         ObservableList<String> states = FXCollections.observableArrayList(
                 "Random", "Sorted", "Inversely Sorted", "From File"
         );
 
-        // 2. Setup Comparison Tab
         if (comboType != null) {
             comboType.setItems(states);
             comboType.getSelectionModel().selectFirst();
         }
 
-        // 3. Setup Visualizer Tab - Check for null to prevent the crash
         if (comboVisualSource != null) {
             comboVisualSource.setItems(states);
             comboVisualSource.getSelectionModel().selectFirst();
 
-            // Wiring the File button visibility
             comboVisualSource.valueProperty().addListener((obs, oldVal, newVal) -> {
                 boolean isFile = "From File".equals(newVal);
                 if (btnSelectFileVisual != null) {
@@ -77,7 +73,6 @@ public class MainController {
             });
         }
 
-        // 4. Setup Algorithm Dropdown
         if (comboVisualAlgo != null) {
             comboVisualAlgo.setItems(FXCollections.observableArrayList(
                     "Bubble Sort", "Selection Sort", "Insertion Sort",
@@ -86,7 +81,6 @@ public class MainController {
             comboVisualAlgo.getSelectionModel().selectFirst();
         }
 
-        // 5. Setup Table Columns
         colName.setCellValueFactory(new PropertyValueFactory<>("algorithmName"));
         colAvg.setCellValueFactory(new PropertyValueFactory<>("avgRuntime"));
         colMin.setCellValueFactory(new PropertyValueFactory<>("minRuntime"));
@@ -190,14 +184,12 @@ public class MainController {
 
     @FXML
     private void handleStartAnimation() {
-        // 1. Double-click protection
         if (isSorting) return;
 
         String source = comboVisualSource.getValue();
         int count = getVisualCount();
         int[] tempArr;
 
-        // 2. Logic for choosing the array state
         if ("Sorted".equals(source)) {
             tempArr = ArrayGenerator.generateSorted(count);
         } else if ("Inversely Sorted".equals(source)) {
@@ -211,27 +203,22 @@ public class MainController {
             tempArr = Arrays.copyOf(loadedFileData, actualCount);
             lblFileStatus.setText("Visualizing File Data (" + actualCount + " elements)");
         } else {
-            // Enforce the 500 scaling here if your generator doesn't do it automatically
             tempArr = ArrayGenerator.generateRandom(count);
         }
 
-        // 3. Lock the data for the thread
         final int[] finalArr = tempArr;
         isSorting = true;
 
-        // Draw the initial state before sorting starts
         drawBars(new VisualSorter.VisualStats(finalArr, -1, 0, 0));
 
         Thread sortingThread = new Thread(() -> {
             try {
-                // Calculate delay: 100 speed = 1ms, 1 speed = ~250ms
                 int speedValue = (int) sliderSpeed.getValue();
                 int delay = (int) (Math.pow(101 - speedValue, 1.2));
 
                 VisualSorter sorter = new VisualSorter(this::drawBars, delay);
                 String selectedAlgo = comboVisualAlgo.getValue();
 
-                // Run the algorithm
                 switch (selectedAlgo) {
                     case "Bubble Sort" -> sorter.visualBubbleSort(finalArr);
                     case "Selection Sort" -> sorter.visualSelectionSort(finalArr);
@@ -242,10 +229,9 @@ public class MainController {
                     default -> System.out.println("Unknown Algorithm Selected");
                 }
             } catch (Exception e) {
-                // Catches the 'Sorting Interrupted' signal from the Reset button
                 System.out.println("Sorting thread terminated safely.");
             } finally {
-                // 4. THE FIX: Always reset the flag so the button works again
+
                 isSorting = false;
                 Platform.runLater(() -> {
                     if (lblFileStatus != null && !"From File".equals(source)) {
@@ -261,29 +247,32 @@ public class MainController {
     }
 
     private void drawBars(VisualSorter.VisualStats stats) {
-        // We wrap the label updates and the drawing in runLater to keep them in sync
         Platform.runLater(() -> {
-            // Update the counters using the data passed from VisualSorter
             lblVisComp.setText("Comparisons: " + stats.comparisons());
             lblVisInter.setText("Interchanges: " + stats.interchanges());
 
             paneCanvas.getChildren().clear();
-            double width = paneCanvas.getWidth();
-            double height = paneCanvas.getHeight();
-            int[] currentArr = stats.array();
-            double barWidth = width / currentArr.length;
+            double h = paneCanvas.getHeight();
+            double w = paneCanvas.getWidth();
+            int[] arr = stats.array();
+            double barWidth = w / arr.length;
 
-            for (int i = 0; i < currentArr.length; i++) {
+            int maxVal = Arrays.stream(arr).max().orElse(500);
 
-                double barHeight = (currentArr[i] / 500.0) * height;
+            for (int i = 0; i < arr.length; i++) {
+                double barHeight = (arr[i] / (double) maxVal) * h;
 
-                Rectangle rect = new Rectangle(i * barWidth, height - barHeight, barWidth - 1, barHeight);
+                Rectangle rect = new Rectangle(i * barWidth, h - barHeight, barWidth - 2, barHeight);
 
                 if (i == stats.activeIndex()) {
                     rect.setFill(Color.WHITE);
                 } else {
-                    rect.setFill(Color.web("#2196F3"));
+                    rect.setFill(Color.web("#0D47A1"));
                 }
+
+                rect.setArcWidth(4);
+                rect.setArcHeight(4);
+
                 paneCanvas.getChildren().add(rect);
             }
         });
@@ -307,15 +296,29 @@ public class MainController {
     @FXML
     private void showComparisonMode() {
         toggleViews(true);
-        btnTabComparison.setStyle("-fx-background-color: #444; -fx-text-fill: white; -fx-border-color: #2196F3; -fx-border-width: 0 0 3 0;");
-        btnTabVisualizer.setStyle("-fx-background-color: #333; -fx-text-fill: #aaa; -fx-border-width: 0;");
+
+        if (!btnTabComparison.getStyleClass().contains("active-tab")) {
+            btnTabComparison.getStyleClass().add("active-tab");
+        }
+
+        btnTabVisualizer.getStyleClass().remove("active-tab");
+
+        btnTabComparison.setStyle(null);
+        btnTabVisualizer.setStyle(null);
     }
 
     @FXML
     private void showVisualizerMode() {
         toggleViews(false);
-        btnTabVisualizer.setStyle("-fx-background-color: #444; -fx-text-fill: white; -fx-border-color: #2196F3; -fx-border-width: 0 0 3 0;");
-        btnTabComparison.setStyle("-fx-background-color: #333; -fx-text-fill: #aaa; -fx-border-width: 0;");
+
+        if (!btnTabVisualizer.getStyleClass().contains("active-tab")) {
+            btnTabVisualizer.getStyleClass().add("active-tab");
+        }
+
+        btnTabComparison.getStyleClass().remove("active-tab");
+
+        btnTabComparison.setStyle(null);
+        btnTabVisualizer.setStyle(null);
     }
 
     private void toggleViews(boolean isComparison) {

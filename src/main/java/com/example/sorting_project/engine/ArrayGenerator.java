@@ -17,7 +17,6 @@ public class ArrayGenerator {
     public static int[] generateSorted(int size) {
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
-            // Scale so the last element is exactly MAX_VAL
             arr[i] = (int) (((double)(i + 1) / size) * MAX_VAL);
         }
         return arr;
@@ -26,7 +25,6 @@ public class ArrayGenerator {
     public static int[] generateInverselySorted(int size) {
         int[] arr = new int[size];
         for (int i = 0; i < size; i++) {
-            // Scale so the first element is exactly MAX_VAL
             arr[i] = (int) (((double)(size - i) / size) * MAX_VAL);
         }
         return arr;

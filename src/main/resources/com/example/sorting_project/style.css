@@ -1,0 +1,114 @@
+.root {
+    -fx-background-color: #0F0F0F;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.label, .text {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-fill: #FFFFFF !important;
+    -fx-opacity: 1.0 !important;
+}
+
+.settings-panel {
+    -fx-background-color: #1A1A1A;
+    -fx-border-color: #333333;
+    -fx-border-width: 0 0 0 1;
+}
+
+.text-field, .combo-box {
+    -fx-background-color: #2A2A2A;
+    -fx-text-fill: #FFFFFF !important;
+    -fx-background-radius: 5;
+    -fx-border-color: #444444;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-background-color: #2A2A2A;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #2196F3 !important;
+}
+
+.check-box {
+    -fx-opacity: 1.0 !important;
+}
+
+.check-box .label, .check-box .text {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-fill: #FFFFFF !important;
+    -fx-opacity: 1.0 !important;
+}
+
+.check-box:hover .label {
+    -fx-text-fill: #2196F3 !important;
+}
+
+.button {
+    -fx-background-color: #333333;
+    -fx-text-fill: #AAAAAA;
+    -fx-border-width: 0;
+}
+
+.button-primary {
+    -fx-background-color: #2196F3;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(33, 150, 243, 0.4), 10, 0, 0, 0);
+}
+
+.table-view {
+    -fx-background-color: #121212;
+    -fx-border-color: #333333;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #000000;
+}
+
+.table-view .column-header {
+    -fx-background-color: #1A1A1A;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #2196F3 !important;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #121212;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #181818;
+}
+
+.table-cell {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-alignment: CENTER;
+}
+
+.table-view .filler, .table-view .placeholder, .table-view .virtual-flow {
+    -fx-background-color: #121212;
+}
+
+#btnTabComparison, #btnTabVisualizer {
+    -fx-background-color: #333333;
+    -fx-text-fill: #AAAAAA;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+}
+
+#btnTabComparison:hover, #btnTabVisualizer:hover {
+    -fx-background-color: #3A3A3A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.active-tab {
+    -fx-background-color: #444444 !important;
+    -fx-text-fill: #FFFFFF !important;
+    -fx-border-color: #2196F3 !important;
+    -fx-border-width: 0 0 4 0 !important;
+}
