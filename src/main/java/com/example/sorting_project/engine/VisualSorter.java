@@ -18,14 +18,36 @@ public class VisualSorter {
     public record VisualStats(int[] array, int activeIndex, int comparisons, int interchanges) {
     }
 
+    private volatile boolean paused = false;
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+        if (!paused) {
+            synchronized (this) {
+                this.notifyAll(); // Wake up the thread when unpaused
+            }
+        }
+    }
+
     private void requestUpdate(int[] array, int currentIndex) {
         if (Thread.currentThread().isInterrupted()) {
             throw new RuntimeException("Sorting Interrupted");
         }
 
-        VisualStats stats = new VisualStats(array.clone(), currentIndex, this.comparisons, this.interchanges);
+        synchronized (this) {
+            while (paused) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
 
+        VisualStats stats = new VisualStats(array.clone(), currentIndex, this.comparisons, this.interchanges);
         updateUI.accept(stats);
+
         try {
             Thread.sleep(delayMs);
         } catch (InterruptedException e) {

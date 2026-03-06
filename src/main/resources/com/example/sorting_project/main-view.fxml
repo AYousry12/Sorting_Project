@@ -94,6 +94,7 @@
                 <Slider fx:id="sliderSpeed" min="1" max="100" value="50" showTickLabels="true"/>
                 <Button text="Start Animation" onAction="#handleStartAnimation" maxWidth="Infinity"
                         style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button fx:id="btnPauseResume" text="Pause" onAction="#handlePauseResume" maxWidth="Infinity" />
                 <Button text="Reset Visual" onAction="#handleResetVisualizer" maxWidth="Infinity"/>
             </VBox>
         </StackPane>

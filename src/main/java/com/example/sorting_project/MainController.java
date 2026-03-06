@@ -42,11 +42,14 @@ public class MainController {
     @FXML private Label lblFileStatus;
     @FXML private CheckBox chkBubble, chkSelection, chkInsertion, chkQuick, chkMerge, chkHeap;
     @FXML private Label lblFileStatusComparison;
+    @FXML private Button btnPauseResume;
 
-
+    private final Object pauseLock = new Object();
+    private volatile boolean isPaused = false;
     private ObservableList<SortingResult> resultsData = FXCollections.observableArrayList();
     private int[] visualArray;
     private int[] loadedFileData = null;
+    private VisualSorter activeSorter;
     private volatile boolean isSorting = false;
 
     @FXML
@@ -208,6 +211,7 @@ public class MainController {
 
         final int[] finalArr = tempArr;
         isSorting = true;
+        isPaused = false; // Reset pause state for new run
 
         drawBars(new VisualSorter.VisualStats(finalArr, -1, 0, 0));
 
@@ -216,24 +220,30 @@ public class MainController {
                 int speedValue = (int) sliderSpeed.getValue();
                 int delay = (int) (Math.pow(101 - speedValue, 1.2));
 
-                VisualSorter sorter = new VisualSorter(this::drawBars, delay);
+                // Assign to the class-level variable so handlePauseResume can see it
+                this.activeSorter = new VisualSorter(this::drawBars, delay);
+
                 String selectedAlgo = comboVisualAlgo.getValue();
 
                 switch (selectedAlgo) {
-                    case "Bubble Sort" -> sorter.visualBubbleSort(finalArr);
-                    case "Selection Sort" -> sorter.visualSelectionSort(finalArr);
-                    case "Insertion Sort" -> sorter.visualInsertionSort(finalArr);
-                    case "Quick Sort" -> sorter.visualQuickSort(finalArr, 0, finalArr.length - 1);
-                    case "Merge Sort" -> sorter.visualMergeSort(finalArr, 0, finalArr.length - 1);
-                    case "Heap Sort" -> sorter.visualHeapSort(finalArr);
+                    case "Bubble Sort" -> activeSorter.visualBubbleSort(finalArr);
+                    case "Selection Sort" -> activeSorter.visualSelectionSort(finalArr);
+                    case "Insertion Sort" -> activeSorter.visualInsertionSort(finalArr);
+                    case "Quick Sort" -> activeSorter.visualQuickSort(finalArr, 0, finalArr.length - 1);
+                    case "Merge Sort" -> activeSorter.visualMergeSort(finalArr, 0, finalArr.length - 1);
+                    case "Heap Sort" -> activeSorter.visualHeapSort(finalArr);
                     default -> System.out.println("Unknown Algorithm Selected");
                 }
             } catch (Exception e) {
-                System.out.println("Sorting thread terminated safely.");
+                System.out.println("Sorting thread terminated or interrupted.");
             } finally {
-
                 isSorting = false;
+                activeSorter = null;
+
+                // Reset UI components back to default
                 Platform.runLater(() -> {
+                    btnPauseResume.setText("Pause");
+                    btnPauseResume.getStyleClass().remove("button-paused");
                     if (lblFileStatus != null && !"From File".equals(source)) {
                         lblFileStatus.setText("Sorting Complete");
                     }
@@ -291,6 +301,25 @@ public class MainController {
         paneCanvas.getChildren().clear();
         lblVisComp.setText("Comparisons: 0");
         lblVisInter.setText("Interchanges: 0");
+    }
+
+    @FXML
+    private void handlePauseResume() {
+        if (activeSorter == null || !isSorting) return;
+
+        isPaused = !isPaused;
+        activeSorter.setPaused(isPaused);
+
+        Platform.runLater(() -> {
+            btnPauseResume.setText(isPaused ? "Resume" : "Pause");
+            if (isPaused) {
+                if (!btnPauseResume.getStyleClass().contains("button-paused")) {
+                    btnPauseResume.getStyleClass().add("button-paused");
+                }
+            } else {
+                btnPauseResume.getStyleClass().remove("button-paused");
+            }
+        });
     }
 
     @FXML

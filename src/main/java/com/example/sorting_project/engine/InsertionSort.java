@@ -12,11 +12,15 @@ public class InsertionSort {
             int current_value = array[i];
             int j = i - 1;
 
-            while (j >= 0 && array[j] > current_value) {
+            while (j >= 0) {
                 comparisons++;
-                array[j + 1] = array[j];
-                interchanges++;
-                j--;
+                if (array[j] > current_value) {
+                    array[j + 1] = array[j];
+                    interchanges++;
+                    j--;
+                } else {
+                    break;
+                }
             }
 
             array[j + 1] = current_value;
